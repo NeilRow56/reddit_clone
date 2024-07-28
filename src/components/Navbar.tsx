@@ -4,6 +4,7 @@ import redditMobile from "../../public/reddit-full.svg";
 import Link from "next/link";
 import Image from "next/image";
 import { ThemeToggle } from "./ThemeToggle";
+import { Button } from "./ui/button";
 
 const Navbar = () => {
   return (
@@ -22,18 +23,11 @@ const Navbar = () => {
       </Link>
       <div className="flex items-center gap-x-4">
         <ThemeToggle />
-        {/* {user ? (
-          <UserDropdown userImage={user.picture} />
-        ) : (
-          <div className="flex items-center gap-x-4">
-            <Button variant="secondary" asChild>
-              <RegisterLink>Sign up</RegisterLink>
-            </Button>
-            <Button asChild>
-              <LoginLink>Log in</LoginLink>
-            </Button>
-          </div>
-        )} */}
+
+        <div className="flex items-center gap-x-4">
+          <Button variant="secondary">Sign up</Button>
+          <Button>Log in</Button>
+        </div>
       </div>
     </nav>
   );
