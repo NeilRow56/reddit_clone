@@ -10,6 +10,8 @@ import { Text, Video } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
+import { JSONContent } from "@tiptap/react";
+import { TipTapEditor } from "@/components/TipTapEditor";
 
 const rules = [
   {
@@ -41,10 +43,10 @@ export default function CreatePostRoute({
 }) {
   const [imageUrl, setImageUrl] = useState<null | string>(null);
   const [title, setTitle] = useState<null | string>(null);
-
+  const [json, setJson] = useState<null | JSONContent>(null);
   return (
-    <div className="max-w-[1000px] mx-auto grid grid-cols-3 gap-x-10 mt-4">
-      <div className="grid grid-cols2 flex-col gap-y-5">
+    <div className="max-w-[1000px] mx-auto flex flex-col lg:flex-row gap-y-5  gap-x-10 mt-4">
+      <div className="w-[65vw]  flex-col gap-y-5">
         <h1 className="font-semibold">
           Subreddit:{" "}
           <Link href={`/r/${params.id}`} className="text-primary">
@@ -79,6 +81,7 @@ export default function CreatePostRoute({
                     value={title ?? ""}
                     onChange={() => {}}
                   />
+                  <TipTapEditor setJson={setJson} json={json} />
                 </CardHeader>
                 <CardFooter>
                   <SubmitButton text="Create Post" />
@@ -93,7 +96,7 @@ export default function CreatePostRoute({
           </TabsContent>
         </Tabs>
       </div>
-      <div className="w-grid grid-cols-1">
+      <div className="w-[350px] flex flex-col">
         <Card className="flex flex-col p-4">
           <div className="flex items-center gap-x-2">
             <Image
@@ -107,10 +110,10 @@ export default function CreatePostRoute({
           </div>
           <Separator className="mt-2" />
 
-          <div className="flex flex-col gap-y-5 mt-5">
+          <div className="flex flex-col gap-y-5 mt-5 ">
             {rules.map((item) => (
-              <div key={item.id}>
-                <p className="text-sm font-medium">
+              <div key={item.id} className="">
+                <p className="text-sm font-medium text-wrap">
                   {item.id}. {item.text}
                 </p>
                 <Separator className="mt-2" />
