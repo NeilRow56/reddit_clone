@@ -12,6 +12,7 @@ import Link from "next/link";
 import { useState } from "react";
 import { JSONContent } from "@tiptap/react";
 import { TipTapEditor } from "@/components/TipTapEditor";
+import { UploadDropzone } from "@/utils/uploadthing";
 
 const rules = [
   {
@@ -91,7 +92,18 @@ export default function CreatePostRoute({
           </TabsContent>
           <TabsContent value="image">
             <Card>
-              <CardHeader>Upload component</CardHeader>
+              <CardHeader>
+                <UploadDropzone
+                  className="ut-button:bg-primary ut-button:ut-readying:bg-primary/50 ut-label:text-primary ut-button:ut-uploading:bg-primary/50 ut-button:ut-uploading:after:bg-primary"
+                  endpoint="imageUploader"
+                  onClientUploadComplete={(res) => {
+                    console.log(res);
+                  }}
+                  onUploadError={(error: Error) => {
+                    alert("Error");
+                  }}
+                />
+              </CardHeader>
             </Card>
           </TabsContent>
         </Tabs>
