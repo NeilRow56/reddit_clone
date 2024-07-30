@@ -36,3 +36,36 @@ export async function createCommunity(prevState: any, formData: FormData) {
     throw e;
   }
 }
+
+export async function updateSubDescription(prevState: any, formData: FormData) {
+  const { getUser } = getKindeServerSession();
+  const user = await getUser();
+
+  if (!user) {
+    return redirect("/api/auth/login");
+  }
+
+  try {
+    const subName = formData.get("subName") as string;
+    const description = formData.get("description") as string;
+
+    await db.subreddit.update({
+      where: {
+        name: subName,
+      },
+      data: {
+        description: description,
+      },
+    });
+
+    return {
+      status: "green",
+      message: "Successfully updated the description!",
+    };
+  } catch (e) {
+    return {
+      status: "error",
+      message: "Sorry something went wrong!",
+    };
+  }
+}

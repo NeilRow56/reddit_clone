@@ -26,7 +26,7 @@ export async function updateUsername(prevState: any, formData: FormData) {
     });
 
     return {
-      message: "Succesfully Updated name",
+      message: "Successfully Updated name",
       status: "green",
     };
   } catch (e) {
