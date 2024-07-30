@@ -6,7 +6,11 @@ const nextConfig = {
         hostname: "lh3.googleusercontent.com",
       },
       {
-        hostname: "https://static.vecteezy.com",
+        hostname: "static.vecteezy.com",
+      },
+      {
+        hostname: "avatar.vercel.sh",
+        port: "",
       },
     ],
   },

@@ -28,6 +28,7 @@ const Navbar = async () => {
           src={RedditText}
           alt="Reddit Desktop"
           className="h-9 w-fit hidden lg:block"
+          priority
         />
       </Link>
       <div className="flex items-center gap-x-4">
