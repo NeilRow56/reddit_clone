@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import db from "@/lib/db";
 import { unstable_noStore as noStore } from "next/cache";
+import { PostCard } from "@/components/PostCard";
 
 async function getData() {
   noStore();
@@ -39,7 +40,7 @@ export default async function Home() {
       <div className="w-[65%] flex flex-col  gap-y-5">
         <CreatePostCard />
         {data.map((post) => (
-          <p key={post.id}>{post.title}</p>
+          <PostCard key={post.id} />
         ))}
       </div>
       <div className="w-[35%]">
