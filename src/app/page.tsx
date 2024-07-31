@@ -6,12 +6,41 @@ import HelloImage from "../../public/hero-image.png";
 import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
+import db from "@/lib/db";
+import { unstable_noStore as noStore } from "next/cache";
 
-export default function Home() {
+async function getData() {
+  noStore();
+  const data = await db.post.findMany({
+    select: {
+      title: true,
+      createdAt: true,
+      textContent: true,
+      id: true,
+      imageString: true,
+      User: {
+        select: {
+          userName: true,
+        },
+      },
+      subName: true,
+    },
+    orderBy: {
+      createdAt: "desc",
+    },
+  });
+  return data;
+}
+
+export default async function Home() {
+  const data = await getData();
   return (
     <div className="max-w-[1000px] mx-auto flex gap-x-10 mt-4 mb-10">
       <div className="w-[65%] flex flex-col  gap-y-5">
         <CreatePostCard />
+        {data.map((post) => (
+          <p key={post.id}>{post.title}</p>
+        ))}
       </div>
       <div className="w-[35%]">
         <Card>
