@@ -25,7 +25,7 @@ export default function RootLayout({
       className="scroll-smooth antialiased"
       suppressHydrationWarning
     >
-      <body className={`flex min-h-screen flex-col ${inter.className}`}>
+      <body className={inter.className}>
         <ThemeProvider
           enableSystem
           attribute="class"
