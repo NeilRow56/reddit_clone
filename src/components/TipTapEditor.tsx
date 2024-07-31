@@ -63,18 +63,6 @@ export const Menubar = ({ editor }: { editor: Editor | null }) => {
       >
         Strike
       </Button>
-      <Button
-        onClick={() => editor.chain().focus().toggleBulletList().run()}
-        variant={editor.isActive("bulletList") ? "default" : "secondary"}
-      >
-        Bullet list
-      </Button>
-      <Button
-        onClick={() => editor.chain().focus().toggleOrderedList().run()}
-        variant={editor.isActive("bulletList") ? "default" : "secondary"}
-      >
-        Ordered list
-      </Button>
     </div>
   );
 };
@@ -88,7 +76,7 @@ export function TipTapEditor({
 }) {
   const editor = useEditor({
     extensions: [StarterKit],
-    content: json ?? "<p> </p>",
+    content: json ?? "<p>Hello world</p>",
     editorProps: {
       attributes: {
         class: "prose",
