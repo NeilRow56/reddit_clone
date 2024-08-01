@@ -14,35 +14,38 @@ import { SuspenseCard } from "@/components/SuspenseCard";
 import Pagination from "@/components/Pagination";
 
 async function getData() {
-  noStore();
-  const data = await db.post.findMany({
-    take: 1,
-    select: {
-      title: true,
-      createdAt: true,
-      textContent: true,
-      id: true,
-      imageString: true,
-      User: {
-        select: {
-          userName: true,
+  const [count, data] = await db.$transaction([
+    db.post.count(),
+    db.post.findMany({
+      take: 1,
+      select: {
+        title: true,
+        createdAt: true,
+        textContent: true,
+        id: true,
+        imageString: true,
+        User: {
+          select: {
+            userName: true,
+          },
         },
-      },
-      subName: true,
+        subName: true,
 
-      Vote: {
-        select: {
-          userId: true,
-          voteType: true,
-          postId: true,
+        Vote: {
+          select: {
+            userId: true,
+            voteType: true,
+            postId: true,
+          },
         },
       },
-    },
-    orderBy: {
-      createdAt: "desc",
-    },
-  });
-  return data;
+      orderBy: {
+        createdAt: "desc",
+      },
+    }),
+  ]);
+
+  return { data, count };
 }
 
 export default function Home() {
@@ -88,7 +91,7 @@ export default function Home() {
 }
 
 async function ShowItems() {
-  const data = await getData();
+  const { count, data } = await getData();
   return (
     <>
       {data.map((post) => (
@@ -108,7 +111,7 @@ async function ShowItems() {
           }, 0)}
         />
       ))}
-      <Pagination totalPages={5} />
+      <Pagination totalPages={Math.ceil(count / 2)} />
     </>
   );
 }
