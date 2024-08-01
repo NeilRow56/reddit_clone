@@ -9,6 +9,8 @@ import Link from "next/link";
 import db from "@/lib/db";
 import { unstable_noStore as noStore } from "next/cache";
 import { PostCard } from "@/components/PostCard";
+import { Suspense } from "react";
+import { SuspenseCard } from "@/components/SuspenseCard";
 
 async function getData() {
   noStore();
@@ -41,29 +43,15 @@ async function getData() {
   return data;
 }
 
-export default async function Home() {
-  const data = await getData();
+export default function Home() {
   return (
     <div className="max-w-[1000px] mx-auto flex gap-x-10 mt-4 mb-10">
       <div className="w-[65%] flex flex-col  gap-y-5">
         <CreatePostCard />
-        {data.map((post) => (
-          <PostCard
-            id={post.id}
-            jsonContent={post.textContent}
-            title={post.title}
-            subName={post.subName as string}
-            userName={post.User?.userName as string}
-            imageString={post.imageString}
-            key={post.id}
-            voteCount={post.Vote.reduce((acc, vote) => {
-              if (vote.voteType === "UP") return acc + 1;
-              if (vote.voteType === "DOWN") return acc - 1;
-
-              return acc;
-            }, 0)}
-          />
-        ))}
+        <Suspense fallback={<SuspenseCard />}>
+          <ShowItems />
+        </Suspense>
+        <ShowItems />
       </div>
       <div className="w-[35%]">
         <Card>
@@ -95,5 +83,30 @@ export default async function Home() {
         </Card>
       </div>
     </div>
+  );
+}
+
+async function ShowItems() {
+  const data = await getData();
+  return (
+    <>
+      {data.map((post) => (
+        <PostCard
+          id={post.id}
+          jsonContent={post.textContent}
+          title={post.title}
+          subName={post.subName as string}
+          userName={post.User?.userName as string}
+          imageString={post.imageString}
+          key={post.id}
+          voteCount={post.Vote.reduce((acc, vote) => {
+            if (vote.voteType === "UP") return acc + 1;
+            if (vote.voteType === "DOWN") return acc - 1;
+
+            return acc;
+          }, 0)}
+        />
+      ))}
+    </>
   );
 }
