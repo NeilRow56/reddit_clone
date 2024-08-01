@@ -25,7 +25,7 @@ export async function handleVote(formData: FormData) {
       userId: user.id,
     },
   });
-  // If vote is already a down vote and user tries to down vote again the vote is deleted. Otherwise the vote will br updated to an up vote.
+  // If vote is already made and user tries to up or down vote again the vote is deleted. Otherwise the vote will be updated to an up or down vote vote as selected.
 
   if (vote) {
     if (vote.voteType === voteDirection) {

@@ -14,6 +14,7 @@ interface iAppProps {
   subName: string;
   userName: string;
   imageString: string | null;
+  voteCount: number;
 }
 
 export function PostCard({
@@ -23,6 +24,7 @@ export function PostCard({
   subName,
   userName,
   imageString,
+  voteCount,
 }: iAppProps) {
   return (
     <Card className="flex relative overflow-hidden">
@@ -34,7 +36,7 @@ export function PostCard({
             <ArrowUp className="h-4 w-4" />
           </Button>
         </form>
-        0
+        {voteCount}
         <form action={handleVote}>
           <input type="hidden" name="voteDirection" value="DOWN" />
           <input type="hidden" name="postId" value={id} />
