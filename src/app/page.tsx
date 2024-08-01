@@ -40,7 +40,15 @@ export default async function Home() {
       <div className="w-[65%] flex flex-col  gap-y-5">
         <CreatePostCard />
         {data.map((post) => (
-          <PostCard key={post.id} />
+          <PostCard
+            id={post.id}
+            jsonContent={post.textContent}
+            title={post.title}
+            subName={post.subName as string}
+            userName={post.User?.userName as string}
+            imageString={post.imageString}
+            key={post.id}
+          />
         ))}
       </div>
       <div className="w-[35%]">
