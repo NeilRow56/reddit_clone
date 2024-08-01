@@ -11,10 +11,12 @@ import { unstable_noStore as noStore } from "next/cache";
 import { PostCard } from "@/components/PostCard";
 import { Suspense } from "react";
 import { SuspenseCard } from "@/components/SuspenseCard";
+import Pagination from "@/components/Pagination";
 
 async function getData() {
   noStore();
   const data = await db.post.findMany({
+    take: 1,
     select: {
       title: true,
       createdAt: true,
@@ -51,7 +53,6 @@ export default function Home() {
         <Suspense fallback={<SuspenseCard />}>
           <ShowItems />
         </Suspense>
-        <ShowItems />
       </div>
       <div className="w-[35%]">
         <Card>
@@ -107,6 +108,7 @@ async function ShowItems() {
           }, 0)}
         />
       ))}
+      <Pagination totalPages={5} />
     </>
   );
 }
