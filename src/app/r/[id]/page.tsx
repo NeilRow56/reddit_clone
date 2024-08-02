@@ -10,58 +10,70 @@ import db from "@/lib/db";
 import { SubDescriptionForm } from "@/components/SubDescriptionForm";
 import { CreatePostCard } from "@/components/CreatePostCard";
 import { PostCard } from "@/components/PostCard";
+import Pagination from "@/components/Pagination";
 
-async function getData(name: string) {
-  const data = await db.subreddit.findUnique({
-    where: {
-      name: name,
-    },
+async function getData(name: string, searchParams: string) {
+  const [count, data] = await db.$transaction([
+    db.post.count({
+      where: {
+        subName: name,
+      },
+    }),
 
-    select: {
-      name: true,
-      createdAt: true,
-      description: true,
-      userId: true,
-      posts: {
-        select: {
-          title: true,
-          imageString: true,
-          id: true,
-          textContent: true,
-          Vote: {
-            select: {
-              userId: true,
-              voteType: true,
+    db.subreddit.findUnique({
+      where: {
+        name: name,
+      },
+
+      select: {
+        name: true,
+        createdAt: true,
+        description: true,
+        userId: true,
+        posts: {
+          take: 2,
+          skip: searchParams ? (Number(searchParams) - 1) * 2 : 0,
+          select: {
+            title: true,
+            imageString: true,
+            id: true,
+            textContent: true,
+            Vote: {
+              select: {
+                userId: true,
+                voteType: true,
+              },
             },
-          },
-          User: {
-            select: {
-              userName: true,
+            User: {
+              select: {
+                userName: true,
+              },
             },
           },
         },
       },
-    },
-  });
+    }),
+  ]);
 
-  return data;
+  return { data, count };
 }
 
 export default async function SubRedditRoute({
   params,
+  searchParams,
 }: {
   params: { id: string };
+  searchParams: { page: string };
 }) {
-  const data = await getData(params.id);
+  const { data, count } = await getData(params.id, searchParams.page);
   const { getUser } = getKindeServerSession();
   const user = await getUser();
 
-  let posts = 1;
   return (
     <div className=" flex lg:w-[1000px] md:w-[600px] sm:w-[450px]  mx-auto  gap-x-10 mt-4 mb-10">
       <div className="flex w-[65%] flex-col gap-y-5 ">
         <CreatePostCard />
-        {posts === 0 ? (
+        {data?.posts.length === 0 ? (
           <div className="flex min-h-[300px] flex-col justify-center items-center rounded-md border border-dashed p-8 text-center">
             <div className="flex h-20 w-20 items-center justify-center rounded-full bg-primary/10">
               <FileQuestion className="h-10 w-10 text-primary" />
@@ -91,6 +103,7 @@ export default async function SubRedditRoute({
                   }, 0)}
                 />
               ))}
+              <Pagination totalPages={Math.ceil(count / 2)} />
             </>
           </>
         )}
