@@ -54,7 +54,7 @@ export function PostCard({
             PostedBy: <span className="hover:text-primary">u/{userName}</span>
           </p>
         </div>
-        <Link href="/">
+        <Link href={`/post/${id}`}>
           <h1 className="font-medium mt-1 text-lg">{title}</h1>
         </Link>
 
