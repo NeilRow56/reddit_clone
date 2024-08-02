@@ -8,6 +8,8 @@ import Link from "next/link";
 import { unstable_noStore as noStore } from "next/cache";
 import db from "@/lib/db";
 import { SubDescriptionForm } from "@/components/SubDescriptionForm";
+import { CreatePostCard } from "@/components/CreatePostCard";
+import { PostCard } from "@/components/PostCard";
 
 async function getData(name: string) {
   const data = await db.subreddit.findUnique({
@@ -20,6 +22,25 @@ async function getData(name: string) {
       createdAt: true,
       description: true,
       userId: true,
+      posts: {
+        select: {
+          title: true,
+          imageString: true,
+          id: true,
+          textContent: true,
+          Vote: {
+            select: {
+              userId: true,
+              voteType: true,
+            },
+          },
+          User: {
+            select: {
+              userName: true,
+            },
+          },
+        },
+      },
     },
   });
 
@@ -35,11 +56,11 @@ export default async function SubRedditRoute({
   const { getUser } = getKindeServerSession();
   const user = await getUser();
 
-  let posts = 0;
+  let posts = 1;
   return (
     <div className=" flex lg:w-[1000px] md:w-[600px] sm:w-[450px]  mx-auto  gap-x-10 mt-4 mb-10">
       <div className="flex w-[65%] flex-col gap-y-5 ">
-        Create Post Card
+        <CreatePostCard />
         {posts === 0 ? (
           <div className="flex min-h-[300px] flex-col justify-center items-center rounded-md border border-dashed p-8 text-center">
             <div className="flex h-20 w-20 items-center justify-center rounded-full bg-primary/10">
@@ -52,7 +73,25 @@ export default async function SubRedditRoute({
           </div>
         ) : (
           <>
-            <div>Map Posts</div>
+            <>
+              {data?.posts.map((post) => (
+                <PostCard
+                  key={post.id}
+                  id={post.id}
+                  imageString={post.imageString}
+                  subName={data.name}
+                  title={post.title}
+                  userName={post.User?.userName as string}
+                  jsonContent={post.textContent}
+                  voteCount={post.Vote.reduce((acc, vote) => {
+                    if (vote.voteType === "UP") return acc + 1;
+                    if (vote.voteType === "DOWN") return acc - 1;
+
+                    return acc;
+                  }, 0)}
+                />
+              ))}
+            </>
           </>
         )}
       </div>
