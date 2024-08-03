@@ -1,18 +1,19 @@
 /* eslint-disable @next/next/no-img-element */
-import { handleVote } from "@/app/actions/vote";
-import { CopyLink } from "@/components/CopyLink";
-import { RenderToJson } from "@/components/RenderToJson";
-import { DownVote, UpVote } from "@/components/SubmitButtons";
+
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import db from "@/lib/db";
 import { Cake, MessageCircle } from "lucide-react";
-import { unstable_noStore as noStore } from "next/cache";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import React from "react";
+import { unstable_noStore as noStore } from "next/cache";
+import db from "@/lib/db";
+import { DownVote, UpVote } from "@/components/SubmitButtons";
+import { RenderToJson } from "@/components/RenderToJson";
+import { CopyLink } from "@/components/CopyLink";
+import { CommentForm } from "@/components/CommentForm";
+import { handleVote } from "@/app/actions/vote";
 
 async function getData(id: string) {
   noStore();
@@ -30,6 +31,21 @@ async function getData(id: string) {
       Vote: {
         select: {
           voteType: true,
+        },
+      },
+      Comment: {
+        orderBy: {
+          createdAt: "desc",
+        },
+        select: {
+          id: true,
+          text: true,
+          User: {
+            select: {
+              imageUrl: true,
+              userName: true,
+            },
+          },
         },
       },
       Subreddit: {
@@ -54,8 +70,9 @@ async function getData(id: string) {
   return data;
 }
 
-const IndividualPostPage = async ({ params }: { params: { id: string } }) => {
+export default async function PostPage({ params }: { params: { id: string } }) {
   const data = await getData(params.id);
+
   return (
     <div className="max-w-[1200px] mx-auto flex gap-x-10 mt-4 mb-10">
       <div className="w-[70%] flex flex-col gap-y-5">
@@ -83,7 +100,9 @@ const IndividualPostPage = async ({ params }: { params: { id: string } }) => {
             <p className="text-xs text-muted-foreground">
               Posted by u/{data.User?.userName}
             </p>
+
             <h1 className="font-medium mt-1 text-lg">{data.title}</h1>
+
             {data.imageString && (
               <Image
                 src={data.imageString}
@@ -93,45 +112,48 @@ const IndividualPostPage = async ({ params }: { params: { id: string } }) => {
                 className="w-full h-auto object-contain mt-2"
               />
             )}
+
             {data.textContent && <RenderToJson data={data.textContent} />}
+
             <div className="flex gap-x-5 items-center mt-3">
               <div className="flex items-center gap-x-1">
                 <MessageCircle className="h-4 w-4 text-muted-foreground" />
                 <p className="text-muted-foreground font-medium text-xs">
-                  {/* {data.Comment.length} Comments */}
+                  {data.Comment.length} Comments
                 </p>
               </div>
 
               <CopyLink id={params.id} />
             </div>
-            {/* <CommentForm postId={params.id} /> */}
-            Comment Form
+
+            <CommentForm postId={params.id} />
+
             <Separator className="my-5" />
+
             <div className="flex flex-col gap-y-7">
-              Comment
-              {/* {data.Comment.map((item) => (
-              <div key={item.id} className="flex flex-col">
-                <div className="flex items-center gap-x-3">
-                  <img
-                    src={
-                      item.User?.imageUrl
-                        ? item.User.imageUrl
-                        : "https://static.vecteezy.com/system/resources/thumbnails/009/292/244/small/default-avatar-icon-of-social-media-user-vector.jpg"
-                    }
-                    className="w-7 h-7 rounded-full"
-                    alt="Avatar of user"
-                  />
+              {data.Comment.map((item) => (
+                <div key={item.id} className="flex flex-col">
+                  <div className="flex items-center gap-x-3">
+                    <img
+                      src={
+                        item.User?.imageUrl
+                          ? item.User.imageUrl
+                          : "https://static.vecteezy.com/system/resources/thumbnails/009/292/244/small/default-avatar-icon-of-social-media-user-vector.jpg"
+                      }
+                      className="w-7 h-7 rounded-full"
+                      alt="Avatar of user"
+                    />
 
-                  <h3 className="text-sm font-medium">
-                    {item.User?.userName}
-                  </h3>
+                    <h3 className="text-sm font-medium">
+                      {item.User?.userName}
+                    </h3>
+                  </div>
+
+                  <p className="ml-10 text-secondary-foreground text-sm tracking-wide">
+                    {item.text}
+                  </p>
                 </div>
-
-                <p className="ml-10 text-secondary-foreground text-sm tracking-wide">
-                  {item.text}
-                </p>
-              </div>
-            ))} */}
+              ))}
             </div>
           </div>
         </Card>
@@ -162,7 +184,7 @@ const IndividualPostPage = async ({ params }: { params: { id: string } }) => {
               <Cake className="h-5 w-5 text-muted-foreground" />
               <p className="text-muted-foreground font-medium text-sm">
                 Created:{" "}
-                {new Date(data?.createdAt as Date).toLocaleDateString("en-GB", {
+                {new Date(data?.createdAt as Date).toLocaleDateString("en-us", {
                   weekday: "long",
                   year: "numeric",
                   month: "short",
@@ -180,6 +202,4 @@ const IndividualPostPage = async ({ params }: { params: { id: string } }) => {
       </div>
     </div>
   );
-};
-
-export default IndividualPostPage;
+}

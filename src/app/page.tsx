@@ -14,6 +14,7 @@ import { SuspenseCard } from "@/components/SuspenseCard";
 import Pagination from "@/components/Pagination";
 
 async function getData(searchParam: string) {
+  noStore();
   const [count, data] = await db.$transaction([
     db.post.count(),
     db.post.findMany({
@@ -25,6 +26,12 @@ async function getData(searchParam: string) {
         textContent: true,
         id: true,
         imageString: true,
+
+        Comment: {
+          select: {
+            id: true,
+          },
+        },
         User: {
           select: {
             userName: true,
@@ -108,6 +115,7 @@ async function ShowItems({ searchParams }: { searchParams: { page: string } }) {
           userName={post.User?.userName as string}
           imageString={post.imageString}
           key={post.id}
+          commentAmount={post.Comment.length}
           voteCount={post.Vote.reduce((acc, vote) => {
             if (vote.voteType === "UP") return acc + 1;
             if (vote.voteType === "DOWN") return acc - 1;

@@ -1,7 +1,5 @@
-import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { User } from "@prisma/client";
-import { ArrowDown, ArrowUp, MessageCircle } from "lucide-react";
+import { MessageCircle } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { CopyLink } from "./CopyLink";
@@ -17,6 +15,7 @@ interface iAppProps {
   userName: string;
   imageString: string | null;
   voteCount: number;
+  commentAmount: number;
 }
 
 export function PostCard({
@@ -27,6 +26,7 @@ export function PostCard({
   userName,
   imageString,
   voteCount,
+  commentAmount,
 }: iAppProps) {
   return (
     <Card className="flex relative overflow-hidden">
@@ -75,7 +75,7 @@ export function PostCard({
           <div className="flex items-center gap-x-1">
             <MessageCircle className="text-muted-foreground h-4 w-4" />
             <p className="text-muted-foreground font-medium text-xs">
-              31 comments
+              {commentAmount} Comment(s)
             </p>
           </div>
           <CopyLink id={id} />

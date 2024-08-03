@@ -13,6 +13,7 @@ import { PostCard } from "@/components/PostCard";
 import Pagination from "@/components/Pagination";
 
 async function getData(name: string, searchParams: string) {
+  noStore();
   const [count, data] = await db.$transaction([
     db.post.count({
       where: {
@@ -34,6 +35,11 @@ async function getData(name: string, searchParams: string) {
           take: 2,
           skip: searchParams ? (Number(searchParams) - 1) * 2 : 0,
           select: {
+            Comment: {
+              select: {
+                id: true,
+              },
+            },
             title: true,
             imageString: true,
             id: true,
@@ -92,6 +98,7 @@ export default async function SubRedditRoute({
                   id={post.id}
                   imageString={post.imageString}
                   subName={data.name}
+                  commentAmount={post.Comment.length}
                   title={post.title}
                   userName={post.User?.userName as string}
                   jsonContent={post.textContent}

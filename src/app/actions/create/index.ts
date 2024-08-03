@@ -24,7 +24,7 @@ export async function createCommunity(prevState: any, formData: FormData) {
       },
     });
 
-    return redirect("/");
+    return redirect(`/r/${data.name}`);
   } catch (e) {
     if (e instanceof Prisma.PrismaClientKnownRequestError) {
       if (e.code === "P2002") {
@@ -96,5 +96,5 @@ export async function createPost(
     },
   });
 
-  return redirect("/");
+  return redirect(`/post/${data.id}`);
 }
